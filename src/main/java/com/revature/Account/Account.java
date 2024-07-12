@@ -1,11 +1,18 @@
 package com.revature.Account;
-enum AccountType{Checking, Saving}
+
+import com.revature.util.enums.AccountType;
+
 public class Account {
     private int accountId;
     private AccountType accountType;
-    private int userId;
-    private String password;
+    private int clientUserId;
     private double accountBalance;
+
+    public Account(int clientUserId, double accountBalance, AccountType accountType) {
+        this.clientUserId = clientUserId;
+        this.accountBalance = accountBalance;
+        this.accountType = accountType;
+    }
 
     public int getAccountId() {
         return accountId;
@@ -23,21 +30,14 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getClientUserId() {
+        return clientUserId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setClientUserId(int clientUserId) {
+        this.clientUserId = clientUserId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public double getAccountBalance() {
         return accountBalance;
@@ -47,11 +47,20 @@ public class Account {
         this.accountBalance = accountBalance;
     }
 
-    public Account(int accountId, AccountType accountType, int userId, String password, double accountBalance) {
+    public Account(int clientUserId) {
+        this.accountType = AccountType.CHECKING;
+        this.accountBalance = 100;
+        this.clientUserId = clientUserId;
+    }
+
+    public Account() {
+    }
+
+    public Account(int accountId, AccountType accountType, int clientUserId, double accountBalance) {
         this.accountId = accountId;
         this.accountType = accountType;
-        this.userId = userId;
-        this.password = password;
+        this.clientUserId = clientUserId;
+
         if(accountBalance<0){
             this.accountBalance = 0;
         }else {
@@ -64,8 +73,8 @@ public class Account {
         return "Account{" +
                 "accountId=" + accountId +
                 ", accountType=" + accountType +
-                ", userId=" + userId +
-                ", password='" + password + '\'' +
+                ", userId=" + clientUserId +
+
                 ", accountBalance=" + accountBalance +
                 '}';
     }

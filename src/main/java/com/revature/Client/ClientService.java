@@ -1,4 +1,106 @@
 package com.revature.Client;
 
-public interface ClientService {
+import com.revature.util.Serviceable;
+
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class ClientService implements Serviceable<Client> {
+    private final ClientRepository clientRepository;
+
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
+
+    @Override
+    public List<Client> findAll() {
+        List<Client> clientList;
+        try {
+            clientRepository.establishConnection();
+            clientList= clientRepository.findAll();
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientRepository.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return clientList;
+
+    }
+
+    @Override
+    public Optional<Client> findById(int id) {
+        Optional<Client> foundClient;
+        try {
+            clientRepository.establishConnection();
+            foundClient= clientRepository.findById(id);
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientRepository.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return foundClient;
+    }
+
+    public Client create(String name, String email, String password) {
+        Client client = new Client(name,email,password);
+        try {
+            clientRepository.establishConnection();
+            clientRepository.save(client);
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientRepository.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return client;
+
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            clientRepository.establishConnection();
+            clientRepository.delete(id);
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientRepository.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    public void update(int id,String name, String email, String password ) {
+        Client toUpdate = new Client(id,name,email,password);
+        try {
+            clientRepository.establishConnection();
+            clientRepository.update(toUpdate);
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                clientRepository.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

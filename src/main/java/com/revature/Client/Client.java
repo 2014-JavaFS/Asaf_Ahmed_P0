@@ -4,16 +4,21 @@ public class Client {
     private int clientId;
     private String name;
     private String email;
-    private String phoneNumber;
-    private int accountId;
     private String password;
 
-    public Client(int clientId, String name, String email, String phoneNumber, int accountId, String password) {
+    public Client() {
+    }
+
+    public Client(int clientId, String name, String email, String password) {
         this.clientId = clientId;
         this.name = name;
         this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.accountId = accountId;
+        this.password = password;
+    }
+
+    public Client(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
         this.password = password;
     }
 
@@ -41,21 +46,8 @@ public class Client {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 
-    public int getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
 
     public String getPassword() {
         return password;
@@ -71,8 +63,6 @@ public class Client {
                 "clientId=" + clientId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", accountId=" + accountId +
                 ", password='" + password + '\'' +
                 '}';
     }
