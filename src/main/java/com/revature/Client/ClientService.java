@@ -53,8 +53,7 @@ public class ClientService implements Serviceable<Client> {
         return foundClient;
     }
 
-    public Client create(String name, String email, String password) {
-        Client client = new Client(name,email,password);
+    public Client create(Client client) {
         try {
             clientRepository.establishConnection();
             clientRepository.save(client);
@@ -101,6 +100,23 @@ public class ClientService implements Serviceable<Client> {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public Optional<Client> findByEmailPassword(String email, String password) {
+        try {
+            clientRepository.establishConnection();
+            Optional<Client> client = clientRepository.findByEmail(email);
+            if(client.isPresent() && client.get().getPassword().equals(password)){
+                return client;
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -119,5 +119,24 @@ public class ClientRepository implements Repository<Client> {
             throw new RuntimeException(e);
         }
     }
+    public Optional<Client> findByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM client WHERE client_email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Client user = new Client(
+                        rs.getInt("client_id"),
+                        rs.getString("client_name"),
+                        rs.getString("client_email"),
+                        rs.getString("client_password")
+                );
+                return Optional.of(user);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
 
 }
