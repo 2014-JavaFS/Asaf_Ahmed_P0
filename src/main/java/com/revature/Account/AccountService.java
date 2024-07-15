@@ -54,8 +54,7 @@ public class AccountService implements Serviceable<Account> {
     }
 
 
-    public void create( int primaryUserId, double accountBalance, AccountType accountType ) {
-        Account account = new Account(primaryUserId,accountBalance,accountType);
+    public Account create( Account account ) {
         try {
             accountRepository.establishConnection();
              accountRepository.save(account);
@@ -68,6 +67,7 @@ public class AccountService implements Serviceable<Account> {
                 throw new RuntimeException(e);
             }
         }
+        return account;
 
     }
     public void deposit(int clientId, double deposit){

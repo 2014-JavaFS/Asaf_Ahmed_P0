@@ -87,8 +87,7 @@ public class ClientService implements Serviceable<Client> {
 
     }
 
-    public void update(int id,String name, String email, String password ) {
-        Client toUpdate = new Client(id,name,email,password);
+    public void update(Client toUpdate) {
         try {
             clientRepository.establishConnection();
             clientRepository.update(toUpdate);

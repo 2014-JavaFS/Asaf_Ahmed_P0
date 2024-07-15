@@ -23,23 +23,40 @@ public class AccountController implements Controller {
     }
 
     private void deleteAccount(Context context) {
+        int id = Integer.parseInt(context.pathParam("id"));
+        accountService.delete(id);
+        context.status(204).result("account deleted");
     }
 
     private void withdrawAccount(Context context) {
+        int client_id = Integer.parseInt(context.header("client_id"));
+        double amount = Double.parseDouble(context.pathParam("withdrawal"));
+        accountService.withDraw(client_id,amount);
+        context.status(202).result("withdrawal succeeded");
     }
 
     private void depositAccount(Context context) {
+        int client_id = Integer.parseInt(context.header("client_id"));
+        double amount = Double.parseDouble(context.pathParam("deposit"));
+        accountService.deposit(client_id,amount);
+        context.status(202).result("deposit succeeded");
     }
 
     private void updateAccount(Context context) {
     }
 
     private void createAccount(Context context) {
+        Account account = context.bodyAsClass(Account.class);
+        Account createdAccount = accountService.create(account);
+        context.status(201).json(createdAccount);
+
     }
 
     private void getAccountById(Context context) {
+
     }
 
     private void getAllAccounts(Context context) {
+
     }
 }

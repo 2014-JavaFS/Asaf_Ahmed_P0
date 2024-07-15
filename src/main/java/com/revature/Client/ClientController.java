@@ -48,7 +48,11 @@ public class ClientController implements Controller {
     }
 
     public void updateClient(Context ctx){
-
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        Client client = ctx.bodyAsClass(Client.class);
+        client.setClientId(id);  // Assuming Client has a setClientId method
+        clientService.update(client);
+        ctx.status(204).result("Client updated");
     }
     public void deleteClient(Context ctx){
         int id = Integer.parseInt(ctx.pathParam("id"));
