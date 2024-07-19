@@ -2,6 +2,7 @@ package com.revature.Client;
 
 import com.revature.util.ConnectionManager;
 import com.revature.util.Repository;
+import com.revature.util.exceptions.InvalidInputException;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class ClientRepository implements Repository<Client> {
     private Connection connection =null;
@@ -27,8 +29,11 @@ public class ClientRepository implements Repository<Client> {
         this.connection =null;
     }
 
-    public void save(Client client) {
-        System.out.println(connection);
+    public void save(Client client) throws InvalidInputException {
+
+        if(!client.getEmail().matches(".*@*.com")){
+            throw new InvalidInputException("email format not acceptable");
+        }
         try {
             PreparedStatement stmt = connection.prepareStatement("insert into client(client_name, client_email, client_password) values(?,?,?)");
             stmt.setString(1,client.getName());

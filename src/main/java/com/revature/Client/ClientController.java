@@ -2,6 +2,7 @@ package com.revature.Client;
 
 import com.revature.Account.AccountService;
 import com.revature.util.Controller;
+import com.revature.util.exceptions.InvalidInputException;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -42,8 +43,12 @@ public class ClientController implements Controller {
     }
     public void createClient(Context ctx){
         Client client = ctx.bodyAsClass(Client.class);
-        Client createdCLient = clientService.create(client);
-        ctx.status(201).json(createdCLient).result("client created");
+        try {
+            Client createdCLient = clientService.create(client);
+            ctx.status(201).json(createdCLient).result("client created");
+        }catch (InvalidInputException e){
+            ctx.status(400).result(e.getMessage());
+        }
 
     }
 

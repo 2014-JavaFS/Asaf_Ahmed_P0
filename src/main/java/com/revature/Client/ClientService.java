@@ -1,6 +1,7 @@
 package com.revature.Client;
 
 import com.revature.util.Serviceable;
+import com.revature.util.exceptions.InvalidInputException;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -53,11 +54,11 @@ public class ClientService implements Serviceable<Client> {
         return foundClient;
     }
 
-    public Client create(Client client) {
+    public Client create(Client client) throws InvalidInputException {
         try {
             clientRepository.establishConnection();
             clientRepository.save(client);
-        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException | InvalidInputException e) {
             throw new RuntimeException(e);
         } finally {
             try {
