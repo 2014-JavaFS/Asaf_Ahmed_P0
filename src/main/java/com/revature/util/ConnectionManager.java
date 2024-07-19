@@ -9,7 +9,7 @@ import java.util.Properties;
 public class ConnectionManager {
     private static Connection connection = null;
     private static Properties properties = new Properties();
-    private static void makeConnection() throws FileNotFoundException {
+    private static Connection makeConnection() throws FileNotFoundException {
         try {
             properties.load(new FileInputStream("C:\\Users\\asafb\\IdeaProjects\\Asaf_Ahmed_P0\\src\\main\\resources\\db.properties"));
         } catch (IOException e) {
@@ -17,7 +17,7 @@ public class ConnectionManager {
         }
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(properties.getProperty("url"),properties.getProperty("user"), properties.getProperty("password"));
+           return DriverManager.getConnection(properties.getProperty("url"),properties.getProperty("user"), properties.getProperty("password"));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -27,10 +27,8 @@ public class ConnectionManager {
     }
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException, FileNotFoundException {
-        if(connection==null){
-            makeConnection();
-        }
-        return connection;
+
+        return makeConnection();
     }
     public static void main(String[] args) {
 

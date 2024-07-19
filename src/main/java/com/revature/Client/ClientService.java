@@ -16,7 +16,7 @@ public class ClientService implements Serviceable<Client> {
         this.clientRepository = clientRepository;
     }
 
-    @Override
+
     public List<Client> findAll() {
         List<Client> clientList;
         try {
@@ -70,7 +70,6 @@ public class ClientService implements Serviceable<Client> {
 
     }
 
-    @Override
     public void delete(int id) {
         try {
             clientRepository.establishConnection();

@@ -11,10 +11,3 @@ CREATE TABLE Account (
     primary_client_id int not null,
     FOREIGN KEY (primary_client_id) REFERENCES Client(client_id)
 );
-CREATE TABLE AccountUsers (
-    account_id INT,
-    client_id INT,
-    PRIMARY KEY (account_id, client_id),
-    FOREIGN KEY (account_id) REFERENCES Account(account_id),
-    FOREIGN KEY (client_id) REFERENCES Client(client_id)
-);

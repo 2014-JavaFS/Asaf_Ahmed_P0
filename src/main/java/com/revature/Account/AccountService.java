@@ -1,8 +1,10 @@
 package com.revature.Account;
 
-import com.revature.Client.Client;
 import com.revature.util.Serviceable;
 import com.revature.util.enums.AccountType;
+import com.revature.util.exceptions.InvalidInputException;
+import com.revature.util.exceptions.NegativeAmountException;
+import com.revature.util.exceptions.OverdraftException;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -17,12 +19,12 @@ public class AccountService implements Serviceable<Account> {
         this.accountRepository = accountRepository;
     }
 
-    @Override
-    public List<Account> findAll() {
+
+    public List<Account> findAll(int client_id) {
         List<Account> accountList = new ArrayList<>();
         try {
             accountRepository.establishConnection();
-            accountList= accountRepository.findAll();
+            accountList= accountRepository.findAll(client_id);
         } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
@@ -54,11 +56,13 @@ public class AccountService implements Serviceable<Account> {
     }
 
 
-    public Account create( Account account ) {
+    public Account create( AccountType accountType, double balance, int primary_client_id ) {
+        Account account = new Account(primary_client_id,balance,accountType);
+        Account created_account;
         try {
             accountRepository.establishConnection();
-             accountRepository.save(account);
-        } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+            created_account = accountRepository.save(account);
+        } catch (SQLException | ClassNotFoundException | FileNotFoundException | InvalidInputException e) {
             throw new RuntimeException(e);
         } finally {
             try {
@@ -67,14 +71,35 @@ public class AccountService implements Serviceable<Account> {
                 throw new RuntimeException(e);
             }
         }
-        return account;
+        return created_account;
 
     }
-    public void deposit(int clientId, double deposit){
-        if(!accountRepository.findByClientId(clientId).isEmpty()&&deposit>0){
+    public void deposit(int clientId,int account_id, double deposit) throws NegativeAmountException {
+        Account accountToChange = new Account();
+        if(deposit>0){
+            try {
 
-            Account accountToChange = accountRepository.findByClientId(clientId).get();
+
+            accountRepository.establishConnection();
+            List<Account> accounts = accountRepository.findAll(clientId);
+
+            for(Account account:accounts){
+                if(account.getAccountId()==account_id){
+                    accountToChange = account;
+                }
+            }
             accountToChange.setAccountBalance(accountToChange.getAccountBalance()+deposit);
+            } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    accountRepository.closeConnection();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+
             try {
                 accountRepository.establishConnection();
                 accountRepository.update(accountToChange);
@@ -90,17 +115,41 @@ public class AccountService implements Serviceable<Account> {
 
 
         }else {
-            System.out.println("Deposit Unsuccessful");
+            throw new NegativeAmountException(deposit);
         }
 
 
 
     }
-    public void withDraw(int clientId, double withDraw){
-        if(!accountRepository.findByClientId(clientId).isEmpty()&&withDraw>0&&accountRepository.findByClientId(clientId).get().getAccountBalance()>withDraw){
+    public void withDraw(int clientId,int account_id, double withDraw) throws OverdraftException, NegativeAmountException {
+        Account accountToChange = new Account();
+        if(withDraw>0){
+            try {
 
-            Account accountToChange = accountRepository.findByClientId(clientId).get();
-            accountToChange.setAccountBalance(accountToChange.getAccountBalance()-withDraw);
+
+                accountRepository.establishConnection();
+                List<Account> accounts = accountRepository.findAll(clientId);
+
+                for(Account account:accounts){
+                    if(account.getAccountId()==account_id){
+                        accountToChange = account;
+                    }
+                }
+                if (withDraw<accountToChange.getAccountBalance()){
+                    accountToChange.setAccountBalance(accountToChange.getAccountBalance()-withDraw);
+                }else {
+                    throw new OverdraftException(withDraw,accountToChange.getAccountBalance());
+                }
+            } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    accountRepository.closeConnection();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             try {
                 accountRepository.establishConnection();
                 accountRepository.update(accountToChange);
@@ -117,14 +166,14 @@ public class AccountService implements Serviceable<Account> {
 
 
         }else{
-            System.out.println("WithDraw Unsuccessful");
+            throw new NegativeAmountException(withDraw);
         }
     }
-    @Override
-    public void delete(int id) {
+
+    public void delete(int account_id, int primary_client_id) {
         try {
             accountRepository.establishConnection();
-            accountRepository.delete(id);
+            accountRepository.delete(account_id,primary_client_id);
         } catch (SQLException | ClassNotFoundException | FileNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
@@ -136,8 +185,9 @@ public class AccountService implements Serviceable<Account> {
         }
     }
 
-    public void update(int accountId, int primaryUserId, double accountBalance, AccountType accountType) {
-        Account toUpdate = new Account(accountId,accountType,primaryUserId,accountBalance);
+    public Account update(Account toUpdate, int client_id, int account_id) {
+        toUpdate.setClientUserId(client_id);
+        toUpdate.setAccountId(account_id);
         try {
             accountRepository.establishConnection();
             accountRepository.update(toUpdate);
@@ -150,5 +200,6 @@ public class AccountService implements Serviceable<Account> {
                 throw new RuntimeException(e);
             }
         }
+        return toUpdate;
     }
 }

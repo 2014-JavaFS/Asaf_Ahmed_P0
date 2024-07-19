@@ -24,10 +24,11 @@ public class ClientRepository implements Repository<Client> {
     @Override
     public void closeConnection() throws SQLException {
         connection.close();
+        this.connection =null;
     }
 
-    @Override
     public void save(Client client) {
+        System.out.println(connection);
         try {
             PreparedStatement stmt = connection.prepareStatement("insert into client(client_name, client_email, client_password) values(?,?,?)");
             stmt.setString(1,client.getName());
@@ -69,8 +70,9 @@ public class ClientRepository implements Repository<Client> {
 
     }
 
-    @Override
+
     public List<Client> findAll() {
+        System.out.println(connection);
         List<Client> clientList = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement("select * from client");
@@ -105,8 +107,6 @@ public class ClientRepository implements Repository<Client> {
         }
     }
 
-
-    @Override
     public void delete(int id) {
         try {
             PreparedStatement stmt = connection.prepareStatement("delete from client where client_id = ?");

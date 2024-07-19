@@ -20,8 +20,8 @@ public class ClientController implements Controller {
         app.get("/clients", this::getAllClients);
         app.get("/clients/{id}", this::getClientById);
         app.post("/clients", this::createClient);
-        app.put("/clients/{id}", this::updateClient);
-        app.delete("/clients/{id}", this::deleteClient);
+        app.patch("/clients/", this::updateClient);
+        app.delete("/clients/", this::deleteClient);
 
     }
 
@@ -43,21 +43,21 @@ public class ClientController implements Controller {
     public void createClient(Context ctx){
         Client client = ctx.bodyAsClass(Client.class);
         Client createdCLient = clientService.create(client);
-        ctx.status(201).json(createdCLient);
+        ctx.status(201).json(createdCLient).result("client created");
 
     }
 
     public void updateClient(Context ctx){
-        int id = Integer.parseInt(ctx.pathParam("id"));
+        int id = Integer.parseInt(ctx.header("primary_client_id"));
         Client client = ctx.bodyAsClass(Client.class);
-        client.setClientId(id);  // Assuming Client has a setClientId method
+        client.setClientId(id);
         clientService.update(client);
-        ctx.status(204).result("Client updated");
+        ctx.status(200).result("Client updated");
     }
     public void deleteClient(Context ctx){
-        int id = Integer.parseInt(ctx.pathParam("id"));
+        int id = Integer.parseInt(ctx.header("primary_client_id"));
         clientService.delete(id);
-        ctx.status(204).result("Client deleted");
+        ctx.status(200).result("Client deleted");
     }
 
 
